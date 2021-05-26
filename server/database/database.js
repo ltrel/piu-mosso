@@ -1,8 +1,9 @@
 const {Sequelize} = require('sequelize');
+const path = require('path');
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: 'db.sqlite',
+  storage: path.join(__dirname, 'db.sqlite'),
   // Disable for production use.
   logging: console.log,
 });
