@@ -13,10 +13,10 @@ const modelDefinitions = [
   require('./models/instrument'),
 ];
 
-for (modelDefinition of modelDefinitions) {
+for (const modelDefinition of modelDefinitions) {
   modelDefinition.define(sequelize);
 }
-for (modelDefinition of modelDefinitions) {
+for (const modelDefinition of modelDefinitions) {
   modelDefinition.addAssociations(sequelize);
 }
 sequelize.sync();
