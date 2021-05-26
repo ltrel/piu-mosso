@@ -24,4 +24,4 @@ module.exports.define = (sequelize) => {
 module.exports.addAssociations = ({models}) => {
   models.User.hasMany(models.Instrument);
   models.Instrument.belongsTo(models.User);
-}
+};

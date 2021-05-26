@@ -16,11 +16,11 @@ const modelDefinitions = [
   require('./models/teacher'),
 ];
 
-for (const modelDefinition of modelDefinitions) {
-  modelDefinition.define(sequelize);
+for (const model of modelDefinitions) {
+  model.define(sequelize);
 }
-for (const modelDefinition of modelDefinitions) {
-  modelDefinition.addAssociations(sequelize);
+for (const model of modelDefinitions) {
+  model.addAssociations(sequelize);
 }
 sequelize.sync();
 
