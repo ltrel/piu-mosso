@@ -11,6 +11,9 @@ const sequelize = new Sequelize({
 const modelDefinitions = [
   require('./models/user'),
   require('./models/instrument'),
+  require('./models/location'),
+  require('./models/student'),
+  require('./models/teacher'),
 ];
 
 for (const modelDefinition of modelDefinitions) {
