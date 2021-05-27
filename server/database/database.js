@@ -14,6 +14,7 @@ const modelDefinitions = [
   require('./models/location'),
   require('./models/student'),
   require('./models/teacher'),
+  require('./models/lesson'),
 ];
 
 for (const model of modelDefinitions) {
