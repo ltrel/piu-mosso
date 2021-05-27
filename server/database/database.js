@@ -15,6 +15,7 @@ const modelDefinitions = [
   require('./models/student'),
   require('./models/teacher'),
   require('./models/lesson'),
+  require('./models/file'),
 ];
 
 for (const model of modelDefinitions) {
