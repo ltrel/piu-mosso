@@ -26,6 +26,4 @@ for (const model of modelDefinitions) {
 }
 sequelize.sync();
 
-module.exports = {
-  sequelize,
-};
+module.exports = sequelize;
