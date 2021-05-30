@@ -24,7 +24,7 @@ app.post('/register', async (req, res) => {
     const passwordHash = await bcrypt.hash(req.body.password, 10);
     // Try to add the user to the database
     await sequelize.models.User.create({
-      userName: req.body.username,
+      username: req.body.username,
       firstName: req.body.firstname,
       lastName: req.body.lastname,
       password: passwordHash,

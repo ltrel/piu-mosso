@@ -2,7 +2,7 @@ const {DataTypes} = require('sequelize');
 
 module.exports.define = (sequelize) => {
   sequelize.define('User', {
-    userName: {
+    username: {
       type: DataTypes.STRING,
       allowNull: false,
     },
