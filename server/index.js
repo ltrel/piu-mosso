@@ -1,7 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
+
 
 const sequelize = require('./database');
+
+const authConfig = require('./auth-config');
+authConfig(passport, sequelize);
 
 const port = 21487;
 const app = express();
@@ -35,6 +41,30 @@ app.post('/register', async (req, res) => {
     return;
   }
   res.sendStatus(200).end();
+});
+
+app.post('/login', async (req, res, next) => {
+  // Pass result of authentication attempt into callback.
+  passport.authenticate('login', async (err, user, info) => {
+    try {
+      if (err) {
+        const error = new Error('An error occurred');
+        return next(error);
+      } else if (!user) {
+        return res.sendStatus(401);
+      }
+
+      req.login(user, {session: false}, async (error) => {
+        if (error) return next(error);
+
+        const body = {id: user.id, username: user.username};
+        const token = jwt.sign({user: body}, 'SECRET_KEY');
+        return res.json({token});
+      });
+    } catch (e) {
+      return next(error);
+    }
+  })(req, res, next);
 });
 
 app.listen(port, () => {
