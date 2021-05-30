@@ -29,12 +29,11 @@ function initialize(passport, sequelize) {
   }
 
   passport.use('login',
-      new LocalStrategy(
-          {
-            usernameField: 'username',
-            passwordField: 'password',
-          },
-          verifyLogin,
+      new LocalStrategy({
+        usernameField: 'username',
+        passwordField: 'password',
+      },
+      verifyLogin,
       ),
   );
 }
