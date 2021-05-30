@@ -21,8 +21,7 @@ app.post('/register', async (req, res) => {
     },
   })).length > 0;
   if (userExists) {
-    res.sendStatus(409).end();
-    return;
+    return res.sendStatus(409);
   }
 
   try {
@@ -37,10 +36,9 @@ app.post('/register', async (req, res) => {
     });
   } catch (e) {
     console.error(e);
-    res.sendStatus(400).end();
-    return;
+    return res.sendStatus(400);
   }
-  res.sendStatus(200).end();
+  res.sendStatus(200);
 });
 
 app.post('/login', async (req, res, next) => {
