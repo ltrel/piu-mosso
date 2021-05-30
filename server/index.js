@@ -17,7 +17,7 @@ app.post('/register', async (req, res) => {
   // Check if there is already a user with that username.
   const userExists = (await sequelize.models.User.findAll({
     where: {
-      userName: req.body.username,
+      username: req.body.username,
     },
   })).length > 0;
   if (userExists) {
