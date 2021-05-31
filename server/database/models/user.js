@@ -24,4 +24,10 @@ module.exports.define = (sequelize) => {
 module.exports.addAssociations = ({models}) => {
   models.User.hasMany(models.Instrument);
   models.Instrument.belongsTo(models.User);
+
+  models.User.hasOne(models.Student);
+  models.Student.belongsTo(models.User);
+
+  models.User.hasOne(models.Teacher);
+  models.Teacher.belongsTo(models.User);
 };
