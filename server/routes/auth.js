@@ -44,7 +44,7 @@ function initialize(sequelize, passport) {
       console.error(e);
       return res.sendStatus(400);
     }
-    res.sendStatus(200);
+    res.sendStatus(201);
   });
 
   router.post('/login', async (req, res, next) => {
