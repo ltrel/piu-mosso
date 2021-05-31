@@ -30,8 +30,8 @@ function initialize(sequelize, passport) {
       // Try to add the user to the database
       const newUser = await sequelize.models.User.create({
         username: req.body.username,
-        firstName: req.body.firstname,
-        lastName: req.body.lastname,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
         password: passwordHash,
       });
 
