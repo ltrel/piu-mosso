@@ -1,5 +1,8 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+
+const config = require('../config.json');
 
 function initialize(sequelize, passport) {
   const router = new express.Router();
@@ -17,7 +20,8 @@ function initialize(sequelize, passport) {
 
     try {
       // Hash the password
-      const passwordHash = await bcrypt.hash(req.body.password, 10);
+      const passwordHash = await bcrypt.hash(req.body.password,
+          config.saltRounds);
       // Try to add the user to the database
       await sequelize.models.User.create({
         username: req.body.username,
@@ -47,7 +51,7 @@ function initialize(sequelize, passport) {
           if (error) return next(error);
 
           const body = {id: user.id, username: user.username};
-          const token = jwt.sign({user: body}, 'SECRET_KEY');
+          const token = jwt.sign({user: body}, config.jwtSecret);
           return res.json({token});
         });
       } catch (e) {

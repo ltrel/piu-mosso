@@ -1,11 +1,20 @@
 const express = require('express');
 const passport = require('passport');
+const fs = require('fs');
+const path = require('path');
+
+// Make sure config file exists before attempting to load it.
+if (!fs.existsSync(path.join(__dirname, 'config.json'))) {
+  console.error('config.json could not be found, Aborting.');
+  return;
+}
+const config = require('./config.json');
 
 // Database connection
 const sequelize = require('./database');
 
 // Express app
-const port = 21487;
+const port = config.port;
 const app = express();
 app.use(express.json());
 

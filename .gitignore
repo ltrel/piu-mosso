@@ -1,3 +1,4 @@
 server/node_modules
 server/database/db.sqlite
 server/test-requests
+server/config.json

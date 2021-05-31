@@ -3,6 +3,8 @@ const LocalStrategy = require('passport-local').Strategy;
 const JWTStrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
 
+const config = require('./config.json');
+
 function initialize(passport, sequelize) {
   async function verifyLogin(username, password, done) {
     try {
@@ -41,7 +43,7 @@ function initialize(passport, sequelize) {
 
   passport.use('jwt',
       new JWTStrategy({
-        secretOrKey: 'SECRET_KEY',
+        secretOrKey: config.jwtSecret,
         jwtFromRequest: ExtractJWT.fromUrlQueryParameter('auth_token'),
       },
       async (token, done) => {
