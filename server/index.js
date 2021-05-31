@@ -7,7 +7,7 @@ const port = 21487;
 const app = express();
 app.use(express.json());
 
-const authConfig = require('./auth-config');
+const authConfig = require('./auth');
 authConfig(passport, sequelize);
 app.use(passport.initialize());
 
