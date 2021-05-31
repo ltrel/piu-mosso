@@ -58,10 +58,11 @@ function initialize(sequelize, passport) {
 
   router.get('/verify-token',
       passport.authenticate('jwt', {session: false}), (req, res) => {
-        console.log(req.user);
+        // Respond with the user's details if authentication was succesful.
         res.json(req.user);
       });
 
+  // Return the created router object.
   return router;
 }
 
