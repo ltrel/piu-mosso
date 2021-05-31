@@ -15,9 +15,7 @@ function initialize(sequelize, passport) {
         username: req.body.username,
       },
     })).length > 0;
-    if (userExists) {
-      return res.sendStatus(409);
-    }
+    if (userExists) return res.sendStatus(409);
 
     // Check if account type is one of the allowed values.
     if (!['student', 'teacher'].includes(req.body.type)) {
