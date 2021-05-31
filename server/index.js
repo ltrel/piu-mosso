@@ -3,14 +3,15 @@ const passport = require('passport');
 
 const sequelize = require('./database');
 
-const authConfig = require('./auth-config');
-authConfig(passport, sequelize);
-
-const routes = require('./routes')(sequelize, passport);
-
 const port = 21487;
 const app = express();
 app.use(express.json());
+
+const authConfig = require('./auth-config');
+authConfig(passport, sequelize);
+app.use(passport.initialize());
+
+const routes = require('./routes')(sequelize, passport);
 
 app.use('/', routes);
 

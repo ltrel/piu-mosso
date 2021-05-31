@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
 const LocalStrategy = require('passport-local').Strategy;
+const JWTStrategy = require('passport-jwt').Strategy;
+const ExtractJWT = require('passport-jwt').ExtractJwt;
 
 function initialize(passport, sequelize) {
   async function verifyLogin(username, password, done) {
@@ -34,6 +36,21 @@ function initialize(passport, sequelize) {
         passwordField: 'password',
       },
       verifyLogin,
+      ),
+  );
+
+  passport.use('jwt',
+      new JWTStrategy({
+        secretOrKey: 'SECRET_KEY',
+        jwtFromRequest: ExtractJWT.fromUrlQueryParameter('auth_token'),
+      },
+      async (token, done) => {
+        try {
+          return done(null, token.user);
+        } catch (e) {
+          done(e);
+        }
+      },
       ),
   );
 }

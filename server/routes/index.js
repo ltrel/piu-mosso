@@ -56,6 +56,12 @@ function initialize(sequelize, passport) {
     })(req, res, next);
   });
 
+  router.get('/verify-token',
+      passport.authenticate('jwt', {session: false}), (req, res) => {
+        console.log(req.user);
+        res.json(req.user);
+      });
+
   return router;
 }
 
