@@ -9,4 +9,3 @@ module.exports.addAssociations = ({models}) => {
   models.Teacher.belongsToMany(models.Student, {through: 'StudentTeachers'});
   models.Student.belongsToMany(models.Teacher, {through: 'StudentTeachers'});
 };
-
