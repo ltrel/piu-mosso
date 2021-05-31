@@ -18,17 +18,29 @@ function initialize(sequelize, passport) {
       return res.sendStatus(409);
     }
 
+    // Check if account type is one of the allowed values.
+    if (!['student', 'teacher'].includes(req.body.type)) {
+      return res.sendStatus(400);
+    }
+
     try {
       // Hash the password
       const passwordHash = await bcrypt.hash(req.body.password,
           config.saltRounds);
       // Try to add the user to the database
-      await sequelize.models.User.create({
+      const newUser = await sequelize.models.User.create({
         username: req.body.username,
         firstName: req.body.firstname,
         lastName: req.body.lastname,
         password: passwordHash,
       });
+
+      // Set the type of user
+      if (req.body.type === 'student') {
+        await newUser.createStudent({});
+      } else if (req.body.type === 'teacher') {
+        await newUser.createTeacher({});
+      }
     } catch (e) {
       console.error(e);
       return res.sendStatus(400);
