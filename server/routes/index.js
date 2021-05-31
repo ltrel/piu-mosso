@@ -5,6 +5,9 @@ function initialize(sequelize, passport) {
 
   router.use('/', require('./auth')(sequelize, passport));
 
+  router.use('/user/students', passport.authenticate('jwt', {session: false}),
+      require('./students')(sequelize));
+
   // Return the created router object.
   return router;
 }
