@@ -27,7 +27,9 @@ app.use(passport.initialize());
 const routes = require('./routes')(sequelize, passport);
 app.use('/', routes);
 
-// Start server
-app.listen(port, () => {
-  console.log(`Server started on port ${port}`);
+// Start server once the database is ready
+sequelize.sync().then(() => {
+  app.listen(port, () => {
+    console.log(`Server started on port ${port}`);
+  });
 });
