@@ -28,7 +28,9 @@ for (const model of modelDefinitions) {
 for (const model of modelDefinitions) {
   model.addAssociations(sequelize);
 }
-// Save everything to disk.
-sequelize.sync();
+// Populate the database with some default entries.
+sequelize.sync().then(() => {
+  require('./default-entries').add(sequelize);
+});
 
 module.exports = sequelize;
