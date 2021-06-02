@@ -48,6 +48,9 @@ function initialize(passport, sequelize) {
       },
       async (token, done) => {
         try {
+          if (Date.now() > token.expiryDate) {
+            return done(null, false, {message: 'Token expired'});
+          }
           return done(null, token.user);
         } catch (e) {
           done(e);

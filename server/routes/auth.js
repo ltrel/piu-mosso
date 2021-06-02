@@ -61,8 +61,10 @@ function initialize(sequelize, passport) {
         req.login(user, {session: false}, async (error) => {
           if (error) return next(error);
 
+          const expiryDate = Date.now() + config.jwtExpirySeconds * 1000;
           const body = {id: user.id, username: user.username};
-          const token = jwt.sign({user: body}, config.jwtSecret);
+          const token = jwt.sign(
+              {expiryDate: expiryDate, user: body}, config.jwtSecret);
           return res.json({token});
         });
       } catch (e) {
