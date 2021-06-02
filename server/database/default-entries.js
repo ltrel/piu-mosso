@@ -1,4 +1,4 @@
-module.exports.add = ({models}) => {
+module.exports.add = async ({models}) => {
   const instrumentNames = [
     'piano',
     'violin',
@@ -16,6 +16,6 @@ module.exports.add = ({models}) => {
     'tuba',
   ];
   for (const instrumentName of instrumentNames) {
-    models.Instrument.create({instrument: instrumentName});
+    await models.Instrument.create({instrument: instrumentName});
   }
 };

@@ -11,7 +11,7 @@ if (!fs.existsSync(path.join(__dirname, 'config.json'))) {
 const config = require('./config.json');
 
 // Database connection
-const sequelize = require('./database');
+const {sequelize, finishDBSetup} = require('./database');
 
 // Express app
 const port = config.port;
@@ -28,7 +28,7 @@ const routes = require('./routes')(sequelize, passport);
 app.use('/', routes);
 
 // Start server once the database is ready
-sequelize.sync().then(() => {
+finishDBSetup().then(() => {
   app.listen(port, () => {
     console.log(`Server started on port ${port}`);
   });
