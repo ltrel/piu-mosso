@@ -1,15 +1,17 @@
 const express = require('express');
 
 function initialize(sequelize, passport) {
-  const router = new express.Router();
+  const mainRouter = new express.Router();
+  const secureRouter = new express.Router();
 
-  router.use('/', require('./auth')(sequelize, passport));
+  mainRouter.use('/', require('./auth')(sequelize, passport));
 
-  router.use('/user/students', passport.authenticate('jwt', {session: false}),
-      require('./students')(sequelize));
+  secureRouter.use(passport.authenticate('jwt', {session: false}));
+  secureRouter.use('/students', require('./students')(sequelize));
 
+  mainRouter.use('/', secureRouter);
   // Return the created router object.
-  return router;
+  return mainRouter;
 }
 
 module.exports = initialize;
