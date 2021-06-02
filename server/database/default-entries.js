@@ -16,6 +16,9 @@ module.exports.add = async ({models}) => {
     'tuba',
   ];
   for (const instrumentName of instrumentNames) {
-    await models.Instrument.create({instrument: instrumentName});
+    // Add if not already in the database.
+    await models.Instrument.findOrCreate({
+      where: {instrument: instrumentName},
+    });
   }
 };
