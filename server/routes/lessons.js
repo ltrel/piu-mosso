@@ -33,6 +33,38 @@ function initialize(sequelize) {
     return res.sendStatus(201);
   });
 
+  // Get lessons
+  router.get('/', async (req, res) => {
+    const user = await sequelize.models.User.findOne({
+      where: {id: req.user.id}});
+
+    // Check if the user is a teacher or student,
+    // then find all the lessons they are involved in.
+    let lessons;
+    if (teacher = await user.getTeacher()) {
+      lessons = await teacher.getLessons();
+    } else if (student = await user.getStudent()) {
+      lessons = await student.getLessons();
+    } else return res.sendStatus(500);
+
+    // Format the lesson details into something useful.
+    const response = await Promise.all(lessons.map(async (lesson) => {
+      const teacherName = (await (await lesson.getTeacher())
+          .getUser()).fullName;
+      const studentName = (await (await lesson.getStudent())
+          .getUser()).fullName;
+      return {
+        id: lesson.id,
+        dateTime: lesson.dateTime.getTime(),
+        minutes: lesson.minutes,
+        notes: lesson.notes,
+        teacher: teacherName,
+        student: studentName,
+        instrument: (await lesson.getInstrument()).instrument,
+      };
+    }));
+    return res.json(response);
+  });
   return router;
 }
 
