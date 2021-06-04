@@ -4,7 +4,7 @@
   "description": "Server for Piu Mosso",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "lint": "eslint \"**/*.js\"",
     "lint-fix": "eslint --fix \"**/*.js\""
   },
@@ -31,6 +31,8 @@
   "devDependencies": {
     "eslint": "^7.27.0",
     "eslint-config-google": "^0.14.0",
-    "nodemon": "^2.0.7"
+    "mocha": "^8.4.0",
+    "nodemon": "^2.0.7",
+    "supertest": "^6.1.3"
   }
 }

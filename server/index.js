@@ -28,8 +28,10 @@ const routes = require('./routes')(sequelize, passport);
 app.use('/', routes);
 
 // Start server once the database is ready
-finishDBSetup().then(() => {
-  app.listen(port, () => {
+const server = finishDBSetup().then(() => {
+  return app.listen(port, () => {
     console.log(`Server started on port ${port}`);
   });
 });
+
+module.exports = {server, sequelize};
