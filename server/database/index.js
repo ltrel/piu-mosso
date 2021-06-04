@@ -1,10 +1,11 @@
 const {Sequelize} = require('sequelize');
 const path = require('path');
+const config = require('../config.json');
 
 // Setup database connection.
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: path.join(__dirname, 'db.sqlite'),
+  storage: path.join(__dirname, config.dbName),
   // Disable for production use.
   logging: console.log,
 });
