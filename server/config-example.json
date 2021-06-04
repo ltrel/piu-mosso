@@ -3,5 +3,6 @@
   "jwtSecret": "SUPER_SECRET_TOKEN",
   "jwtExpirySeconds": 7200,
   "saltRounds": 10,
-  "dbName": "db.sqlite"
+  "dbName": "db.sqlite",
+  "printQueries": false
 }

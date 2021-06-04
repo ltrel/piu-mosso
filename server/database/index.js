@@ -6,8 +6,7 @@ const config = require('../config.json');
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: path.join(__dirname, config.dbName),
-  // Disable for production use.
-  logging: console.log,
+  logging: (config.printQueries ? console.log : false),
 });
 
 // Load files containing the database schema.
