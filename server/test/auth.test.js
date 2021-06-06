@@ -117,6 +117,34 @@ describe('Authentication', function() {
     });
   });
 
+  describe('GET /verify-token', function() {
+    it('Returns user details for valid JWTs', async function() {
+      // Expires 10 seconds in the future
+      const expiryDate = Date.now() + 10_000;
+      const body = {id: 1, username: 'testuser'};
+      const token = jwt.sign(
+          {expiryDate: expiryDate, user: body}, config.jwtSecret);
+      const res = await request(await server)
+          .get('/verify-token')
+          .query({auth_token: token})
+          .expect('Content-Type', /json/)
+          .expect(200);
+      assert.deepStrictEqual(res.body, body);
+    });
+    it('Rejects expired JWTs', async function() {
+      // Expired 10 seconds in the past
+      const expiryDate = Date.now() - 10_000;
+      const body = {id: 1, username: 'testuser'};
+      const token = jwt.sign(
+          {expiryDate: expiryDate, user: body}, config.jwtSecret);
+      const res = await request(await server)
+          .get('/verify-token')
+          .query({auth_token: token})
+          .expect(401);
+      assert.deepStrictEqual(res.body, {});
+    });
+  });
+
   after(async function() {
     await (await server).close();
   });
