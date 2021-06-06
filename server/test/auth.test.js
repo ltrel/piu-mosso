@@ -113,7 +113,7 @@ describe('Authentication', function() {
             password: 'wrongpass',
           })
           .expect(401);
-      assert.strictEqual(Object.keys(res.body).length, 0);
+      assert.deepStrictEqual(res.body, {});
     });
   });
 
