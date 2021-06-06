@@ -1,5 +1,9 @@
 const request = require('supertest');
+const jwt = require('jsonwebtoken');
+const assert = require('assert');
+
 const {server, sequelize} = require('../');
+const config = require('../config.json');
 
 describe('Authentication', function() {
   beforeEach(async function() {
@@ -67,6 +71,49 @@ describe('Authentication', function() {
             type: 'invalid',
           })
           .expect(400);
+    });
+  });
+
+  describe('POST /login', function() {
+    it('Returns valid JWTs when given correct details', async function() {
+      await request(await server)
+          .post('/register')
+          .send({
+            username: 'testuser',
+            password: 'pass',
+            fullName: 'Test User',
+            type: 'teacher',
+          })
+          .expect(201);
+      const res = await request(await server)
+          .post('/login')
+          .send({
+            username: 'testuser',
+            password: 'pass',
+          })
+          .expect('Content-Type', /json/)
+          .expect(200);
+      const token = (jwt.verify(res.body.token, config.jwtSecret));
+      assert.strictEqual(token.user.username, 'testuser');
+    });
+    it('Rejects incorrect passwords', async function() {
+      await request(await server)
+          .post('/register')
+          .send({
+            username: 'testuser',
+            password: 'pass',
+            fullName: 'Test User',
+            type: 'teacher',
+          })
+          .expect(201);
+      const res = await request(await server)
+          .post('/login')
+          .send({
+            username: 'testuser',
+            password: 'wrongpass',
+          })
+          .expect(401);
+      assert.strictEqual(Object.keys(res.body).length, 0);
     });
   });
 
