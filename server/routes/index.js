@@ -7,7 +7,8 @@ function initialize(sequelize, passport) {
   mainRouter.use('/', require('./auth')(sequelize, passport));
 
   secureRouter.use(passport.authenticate('jwt', {session: false}));
-  secureRouter.use('/students', require('./students')(sequelize));
+  secureRouter.use('/teacher-students',
+      require('./teacher-students')(sequelize));
   secureRouter.use('/lessons', require('./lessons')(sequelize));
 
   mainRouter.use('/', secureRouter);
