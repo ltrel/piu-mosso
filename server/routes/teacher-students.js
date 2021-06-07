@@ -18,7 +18,7 @@ function initialize(sequelize) {
     if (student === null) return res.sendStatus(400);
 
     await teacher.addStudent(student);
-    return res.sendStatus(201);
+    return res.sendStatus(200);
   });
 
   return router;
