@@ -1,7 +1,8 @@
 const {server, sequelize} = require('../');
 const config = require('../config.json');
 
-before(function() {
+before(async function() {
+  await server;
   // Suppress console output.
   console.log = (str) => undefined;
 });
