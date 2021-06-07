@@ -2,8 +2,7 @@ const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const assert = require('assert');
 
-const {server, sequelize} = require('../');
-const config = require('../config.json');
+const {server, sequelize, config} = require('./_setup.test');
 
 describe('Authentication', function() {
   beforeEach(async function() {
@@ -146,6 +145,8 @@ describe('Authentication', function() {
   });
 
   after(async function() {
-    await (await server).close();
+    await sequelize.models.User.destroy({truncate: true});
+    await sequelize.models.Student.destroy({truncate: true});
+    await sequelize.models.Teacher.destroy({truncate: true});
   });
 });
