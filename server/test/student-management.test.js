@@ -93,6 +93,38 @@ describe('Student Management', function() {
     });
   });
 
+  describe('GET /teacher-students', function() {
+    it('Lists the students', async function() {
+      // Add students to the database.
+      for (const studentUser of studentUsers) {
+        await teacher.addStudent(await studentUser.getStudent());
+      }
+      // Make the request.
+      const res = await request(await server)
+          .get('/teacher-students')
+          .query({auth_token: token})
+          .expect(200);
+      // Make sure the student details returned by the request are correct.
+      for (const studentJson of res.body) {
+        const student = await sequelize.models.Student.findOne({where: {
+          id: studentJson.studentId,
+        }});
+        const studentUser = await student.getUser();
+        assert(student);
+        assert(studentUser);
+        assert.strictEqual(studentUser.username, studentJson.username);
+        assert.strictEqual(studentUser.fullName, studentJson.fullName);
+      }
+    });
+    it('Rejects requests from students', async function() {
+      const res = await request(await server)
+          .get('/teacher-students')
+          .query({auth_token: studentToken})
+          .expect(401);
+      assert.deepStrictEqual(res.body, {});
+    });
+  });
+
   after(async function() {
     await sequelize.models.TeacherStudents.destroy({truncate: true});
     await sequelize.models.User.destroy({truncate: true});
