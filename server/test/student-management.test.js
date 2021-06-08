@@ -80,6 +80,22 @@ describe('Student Management', function() {
       // Check if the two arrays of IDs are the same.
       assert.deepStrictEqual(addedStudentIds, studentIds);
     });
+    it('Rejects requests with non-existent student IDs', async function() {
+      await request(await server)
+          .post('/teacher-students')
+          .query({auth_token: token})
+          .send({
+            studentId: 0,
+          })
+          .expect(400);
+    });
+    it('Rejects incomplete requests', async function() {
+      await request(await server)
+          .post('/teacher-students')
+          .query({auth_token: token})
+          .send({})
+          .expect(400);
+    });
     it('Rejects requests from students', async function() {
       const studentId = (await studentUsers[0].getStudent()).id;
       const res = await request(await server)

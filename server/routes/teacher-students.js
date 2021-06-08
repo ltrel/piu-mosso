@@ -12,6 +12,9 @@ function initialize(sequelize) {
     // Respond with authentication error if there is no teacher with that id.
     if (teacher === null) return res.sendStatus(401);
 
+    // Make sure request body contains a student ID.
+    if (!('studentId' in req.body)) return res.sendStatus(400);
+
     // Find student specified in request.
     const student = await sequelize.models.Student.findOne({
       where: {id: req.body.studentId}});
