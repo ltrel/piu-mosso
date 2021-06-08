@@ -10,6 +10,7 @@ describe('Student Management', function() {
   let teacher;
   let studentUsers;
   before(async function() {
+    // Add a teacher.
     const teacherUser = await sequelize.models.User.create({
       username: 'teacher',
       fullName: 'Test Teacher',
@@ -17,11 +18,13 @@ describe('Student Management', function() {
     });
     teacher = await teacherUser.createTeacher({});
 
+    // Create a token for the teacher.
     const expiryDate = Date.now() + 10_000;
     const body = {id: teacherUser.id, username: teacherUser.username};
     token = jwt.sign(
         {expiryDate: expiryDate, user: body}, config.jwtSecret);
 
+    // Add some students.
     studentUsers = await sequelize.models.User.bulkCreate([
       {
         username: 'student1',
@@ -37,6 +40,7 @@ describe('Student Management', function() {
     for (const student of studentUsers) {
       await student.createStudent({});
     }
+    // Create a token from one of the students.
     const invalidTokenBody = {
       id: studentUsers[0].id,
       username: studentUsers[0].username,
