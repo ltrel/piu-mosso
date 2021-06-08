@@ -12,6 +12,19 @@
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}/server/index.js"
+    },
+    {
+      "name": "Debug Tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/server/node_modules/mocha/bin/_mocha",
+      "stopOnEntry": false,
+      "args": ["--no-timeouts", "--colors"],
+      "cwd": "${workspaceRoot}/server",
+      "runtimeExecutable": null,
+      "env": {
+        "NODE_ENV": "testing"
+      }
     }
   ]
 }
