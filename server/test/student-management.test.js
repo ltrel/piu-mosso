@@ -119,6 +119,7 @@ describe('Student Management', function() {
       const res = await request(await server)
           .get('/teacher-students')
           .query({auth_token: token})
+          .expect('Content-Type', /json/)
           .expect(200);
       // Make sure the student details returned by the request are correct.
       for (const studentJson of res.body) {
