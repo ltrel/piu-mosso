@@ -58,7 +58,7 @@ describe('Student Management', function() {
       // Sort them.
       studentIds.sort();
       // Send a request to add each student to the teacher.
-      for (studentId of studentIds) {
+      for (const studentId of studentIds) {
         await request(await server)
             .post('/teacher-students')
             .query({auth_token: token})
