@@ -1,8 +1,7 @@
 const request = require('supertest');
 const assert = require('assert');
-const jwt = require('jsonwebtoken');
 
-const {server, sequelize, config} = require('./_setup.test');
+const {server, sequelize, utils} = require('./_setup.test');
 
 describe('Student Management', function() {
   let token;
@@ -19,10 +18,7 @@ describe('Student Management', function() {
     teacher = await teacherUser.createTeacher({});
 
     // Create a token for the teacher.
-    const expiryDate = Date.now() + 10_000;
-    const body = {id: teacherUser.id, username: teacherUser.username};
-    token = jwt.sign(
-        {expiryDate: expiryDate, user: body}, config.jwtSecret);
+    token = utils.generateToken(teacherUser, 10_000);
 
     // Add some students.
     studentUsers = await sequelize.models.User.bulkCreate([
@@ -41,12 +37,7 @@ describe('Student Management', function() {
       await student.createStudent({});
     }
     // Create a token from one of the students.
-    const invalidTokenBody = {
-      id: studentUsers[0].id,
-      username: studentUsers[0].username,
-    };
-    studentToken = jwt.sign(
-        {expiryDate: expiryDate, user: invalidTokenBody}, config.jwtSecret);
+    studentToken = utils.generateToken(studentUsers[0], 10_000);
   });
   beforeEach(async function() {
     await sequelize.models.TeacherStudents.destroy({truncate: true});
@@ -122,16 +113,7 @@ describe('Student Management', function() {
           .expect('Content-Type', /json/)
           .expect(200);
       // Make sure the student details returned by the request are correct.
-      for (const studentJson of res.body) {
-        const student = await sequelize.models.Student.findOne({where: {
-          id: studentJson.studentId,
-        }});
-        const studentUser = await student.getUser();
-        assert(student);
-        assert(studentUser);
-        assert.strictEqual(studentUser.username, studentJson.username);
-        assert.strictEqual(studentUser.fullName, studentJson.fullName);
-      }
+      await utils.verifyStudentJsonArr(res.body, sequelize);
     });
     it('Rejects requests from students', async function() {
       const res = await request(await server)
@@ -150,16 +132,7 @@ describe('Student Management', function() {
           .expect(200);
 
       // Make sure the student details returned by the request are correct.
-      for (const studentJson of res.body) {
-        const student = await sequelize.models.Student.findOne({where: {
-          id: studentJson.studentId,
-        }});
-        const studentUser = await student.getUser();
-        assert(student);
-        assert(studentUser);
-        assert.strictEqual(studentUser.username, studentJson.username);
-        assert.strictEqual(studentUser.fullName, studentJson.fullName);
-      }
+      await utils.verifyStudentJsonArr(res.body, sequelize);
     });
     it('Rejects requests from students', async function() {
       const res = await request(await server)
@@ -171,9 +144,6 @@ describe('Student Management', function() {
   });
 
   after(async function() {
-    await sequelize.models.TeacherStudents.destroy({truncate: true});
-    await sequelize.models.User.destroy({truncate: true});
-    await sequelize.models.Student.destroy({truncate: true});
-    await sequelize.models.Teacher.destroy({truncate: true});
+    await utils.clearAllTables(sequelize);
   });
 });

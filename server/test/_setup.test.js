@@ -1,5 +1,6 @@
 const {server, sequelize} = require('../');
 const config = require('../config.json');
+const utils = require('./utils');
 
 before(async function() {
   await server;
@@ -11,4 +12,9 @@ after(async function() {
   await (await server).close();
 });
 
-module.exports = {server, sequelize, config};
+module.exports = {
+  server,
+  sequelize,
+  config,
+  utils,
+};
