@@ -177,4 +177,3 @@ describe('Student Management', function() {
     await sequelize.models.Teacher.destroy({truncate: true});
   });
 });
-
