@@ -1,4 +1,4 @@
-express = require('express');
+const express = require('express');
 
 function initialize(sequelize) {
   const router = new express.Router();
