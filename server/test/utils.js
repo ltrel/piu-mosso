@@ -1,6 +1,7 @@
 assert = require('assert');
 jwt = require('jsonwebtoken');
 config = require('../config.json');
+defaultEntries = require('../database/default-entries');
 
 async function clearAllTables(sequelize) {
   await sequelize.models.File.destroy({truncate: true});
@@ -12,6 +13,7 @@ async function clearAllTables(sequelize) {
   await sequelize.models.Teacher.destroy({truncate: true});
   await sequelize.models.UserInstruments.destroy({truncate: true});
   await sequelize.models.User.destroy({truncate: true});
+  await defaultEntries.add(sequelize);
 }
 
 async function verifyStudentJsonArr(jsonArr, sequelize) {
