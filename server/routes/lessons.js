@@ -30,7 +30,7 @@ function initialize(sequelize) {
     lesson.setStudent(student);
     lesson.setInstrument(instrument);
 
-    return res.sendStatus(201);
+    return res.status(201).send({lessonId: lesson.id});
   });
 
   // Get lessons
