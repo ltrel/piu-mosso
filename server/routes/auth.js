@@ -1,13 +1,25 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const {body, validationResult} = require('express-validator');
 
 const config = require('../config.json');
 
 function initialize(sequelize, passport) {
   const router = new express.Router();
 
-  router.post('/register', async (req, res) => {
+  const registerValidators = [
+    body('username').isString(),
+    body('password').isString(),
+    body('type').isIn(['student', 'teacher']),
+  ];
+  router.post('/register', registerValidators, async (req, res) => {
+    // Return validation errors if any were found.
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({errors: errors.array});
+    }
+
     // Check if there is already a user with that username.
     const userExists = (await sequelize.models.User.findAll({
       where: {
@@ -15,11 +27,6 @@ function initialize(sequelize, passport) {
       },
     })).length > 0;
     if (userExists) return res.sendStatus(409);
-
-    // Check if account type is one of the allowed values.
-    if (!['student', 'teacher'].includes(req.body.type)) {
-      return res.sendStatus(400);
-    }
 
     try {
       // Hash the password

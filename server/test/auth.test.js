@@ -53,9 +53,7 @@ describe('Authentication', function() {
     it('Rejects incomplete requests', async function() {
       await request(await server)
           .post('/register')
-          .send({
-            username: 'incomplete',
-          })
+          .send({})
           .expect(400);
     });
     it('Rejects invalid account types', async function() {
