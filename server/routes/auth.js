@@ -52,31 +52,17 @@ function initialize(sequelize, passport) {
     res.sendStatus(201);
   });
 
-  router.post('/login', async (req, res, next) => {
-    // Pass result of authentication attempt into callback.
-    passport.authenticate('login', async (err, user, info) => {
-      try {
-        if (err) {
-          const error = new Error('An error occurred');
-          return next(error);
-        } else if (!user) {
-          return res.sendStatus(401);
-        }
-
-        req.login(user, {session: false}, async (error) => {
-          if (error) return next(error);
-
-          const expiryDate = Date.now() + config.jwtExpirySeconds * 1000;
-          const body = {id: user.id, username: user.username};
-          const token = jwt.sign(
-              {expiryDate: expiryDate, user: body}, config.jwtSecret);
-          return res.json({token});
-        });
-      } catch (e) {
-        return next(error);
-      }
-    })(req, res, next);
-  });
+  router.post('/login',
+      passport.authenticate('login', {session: false}),
+      async (req, res) => {
+        // Create new JWT.
+        const expiryDate = Date.now() + config.jwtExpirySeconds * 1000;
+        const body = {id: req.user.id, username: req.user.username};
+        const token = jwt.sign(
+            {expiryDate: expiryDate, user: body}, config.jwtSecret);
+        // Send it back in the response.
+        return res.json({token});
+      });
 
   router.get('/verify-token',
       passport.authenticate('jwt', {session: false}), (req, res) => {
