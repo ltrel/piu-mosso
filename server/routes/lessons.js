@@ -1,10 +1,25 @@
 const express = require('express');
+const {body, validationResult} = require('express-validator');
+const {authorizeUserType} = require('./utils');
 
 function initialize(sequelize) {
   const router = new express.Router();
 
+  const postValidators = [
+    authorizeUserType('teacher', sequelize),
+    body('studentId').isInt(),
+    body('instrument').isString(),
+    body('dateTime').isInt(),
+    body('minutes').isInt(),
+  ];
   // Schedule lesson
-  router.post('/', async (req, res) => {
+  router.post('/', postValidators, async (req, res) => {
+    // Return validation errors if any were found.
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({errors: errors.array});
+    }
+
     // Find teacher with id from request
     const user = await sequelize.models.User.findOne({
       where: {id: req.user.id}});
