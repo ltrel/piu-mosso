@@ -73,8 +73,10 @@ function initialize(sequelize) {
         dateTime: lesson.dateTime.getTime(),
         minutes: lesson.minutes,
         notes: lesson.notes,
-        teacher: teacherName,
-        student: studentName,
+        teacherName: teacherName,
+        teacherId: (await lesson.getTeacher()).id,
+        studentName: studentName,
+        studentId: (await lesson.getTeacher()).id,
         instrument: (await lesson.getInstrument()).instrument,
       };
     }));
