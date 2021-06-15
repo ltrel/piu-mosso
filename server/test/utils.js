@@ -1,7 +1,7 @@
-assert = require('assert');
-jwt = require('jsonwebtoken');
-config = require('../config.json');
-defaultEntries = require('../database/default-entries');
+const assert = require('assert');
+const jwt = require('jsonwebtoken');
+const config = require('../config.json');
+const defaultEntries = require('../database/default-entries');
 
 async function clearAllTables(sequelize) {
   await sequelize.models.File.destroy({truncate: true});
