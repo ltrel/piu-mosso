@@ -4,9 +4,12 @@ module.exports.add = async ({models}) => {
     'violin',
     'viola',
     'cello',
+    'double bass',
     'guitar',
+    'bass guitar',
     'voice',
     'flute',
+    'piccolo',
     'clarinet',
     'saxophone',
     'oboe',
@@ -14,6 +17,8 @@ module.exports.add = async ({models}) => {
     'trumpet',
     'trombone',
     'tuba',
+    'drums',
+    'mallet percussion',
   ];
   for (const instrumentName of instrumentNames) {
     // Add if not already in the database.
