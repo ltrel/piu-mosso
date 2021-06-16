@@ -32,6 +32,36 @@ async function verifyStudentJson(json, sequelize) {
   assert.strictEqual(studentUser.fullName, json.fullName);
 }
 
+async function verifyLessonJsonArr(jsonArr, sequelize) {
+  for (json of jsonArr) {
+    await verifyLessonJson(json, sequelize);
+  }
+}
+async function verifyLessonJson(json, sequelize) {
+  const lesson = await sequelize.models.Lesson.findOne({where: {
+    id: json.id,
+  }});
+  const student = await sequelize.models.Student.findOne({where: {
+    id: json.studentId,
+  }});
+  const studentUser = await student.getUser();
+  const teacher = await sequelize.models.Student.findOne({where: {
+    id: json.studentId,
+  }});
+  const teacherUser = await teacher.getUser();
+  assert(lesson);
+  assert(student);
+  assert(studentUser);
+  assert(teacher);
+  assert(teacherUser);
+  assert.strictEqual(lesson.minutes, json.minutes);
+  assert.strictEqual(lesson.dateTime, json.dateTime);
+  assert.strictEqual(
+      (await lesson.getInstrument()).instrument, json.instrument);
+  assert.strictEqual(studentUser.fullName, json.studentName);
+  assert.strictEqual(teacherUser.fullName, json.teacherName);
+}
+
 function generateToken(user, expiryOffset) {
   const expiryDate = Date.now() + expiryOffset;
   const body = {id: user.id, username: user.username};
@@ -42,5 +72,7 @@ module.exports = {
   clearAllTables,
   verifyStudentJson,
   verifyStudentJsonArr,
+  verifyLessonJson,
+  verifyLessonJsonArr,
   generateToken,
 };

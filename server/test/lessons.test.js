@@ -105,6 +105,41 @@ describe('Lesson Scheduling', function() {
     });
   });
 
+  describe('GET /lessons', function() {
+    it('Lists the lessons a teacher has', async function() {
+      const saxophone = await sequelize.models.Instrument.findOne({
+        where: {instrument: 'saxophone'},
+      });
+      const clarinet = await sequelize.models.Instrument.findOne({
+        where: {instrument: 'clarinet'},
+      });
+
+      const lessons = [];
+      lessons.push(await sequelize.models.Lesson.create({
+        dateTime: 1623810600000,
+        minutes: 30,
+      }));
+      await lessons[0].setTeacher(teacher);
+      await lessons[0].setStudent(await studentUsers[0].getStudent());
+      await lessons[0].setInstrument(saxophone);
+
+      lessons.push(await sequelize.models.Lesson.create({
+        dateTime: 1623769200000,
+        minutes: 45,
+      }));
+      await lessons[1].setTeacher(teacher);
+      await lessons[1].setStudent(await studentUsers[1].getStudent());
+      await lessons[1].setInstrument(clarinet);
+
+      const res = await request(await server)
+          .get('/lessons')
+          .query({auth_token: token})
+          .expect(200)
+          .expect('Content-Type', /json/);
+      utils.verifyLessonJsonArr(res.body);
+    });
+  });
+
   after(async function() {
     await utils.clearAllTables(sequelize);
   });
