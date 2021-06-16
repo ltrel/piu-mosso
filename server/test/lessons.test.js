@@ -131,12 +131,21 @@ describe('Lesson Scheduling', function() {
       await lessons[1].setStudent(await studentUsers[1].getStudent());
       await lessons[1].setInstrument(clarinet);
 
-      const res = await request(await server)
+      const teacherRes = await request(await server)
           .get('/lessons')
           .query({auth_token: token})
           .expect(200)
           .expect('Content-Type', /json/);
-      utils.verifyLessonJsonArr(res.body);
+      assert.strictEqual(teacherRes.body.length, 2);
+      utils.verifyLessonJsonArr(teacherRes.body);
+
+      const studentRes = await request(await server)
+          .get('/lessons')
+          .query({auth_token: studentToken})
+          .expect(200)
+          .expect('Content-Type', /json/);
+      assert.strictEqual(studentRes.body.length, 1);
+      utils.verifyLessonJsonArr(studentRes.body);
     });
   });
 
