@@ -21,7 +21,9 @@ function initialize(sequelize) {
   });
 
   router.get('/', async (req, res) => {
+    // Find all the teacher's students.
     const students = await req.teacher.getStudents();
+    // Format the response.
     const response = await Promise.all(
         students.map(async (student) => {
           const studentUser = await student.getUser();

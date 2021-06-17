@@ -12,7 +12,6 @@ function initialize(sequelize) {
     body('dateTime').isInt(),
     body('minutes').isInt(),
   ];
-  // Schedule lesson
   router.post('/', postValidators, async (req, res) => {
     // Return validation errors if any were found.
     const errors = validationResult(req);
@@ -20,7 +19,7 @@ function initialize(sequelize) {
       return res.status(400).json({errors: errors.array});
     }
 
-    // Find teacher with id from request
+    // Find teacher with id from request.
     const user = await sequelize.models.User.findOne({
       where: {id: req.user.id}});
     const teacher = await user.getTeacher();
@@ -37,6 +36,7 @@ function initialize(sequelize) {
       where: {instrument: req.body.instrument}});
     if (instrument === null) return res.sendStatus(400);
 
+    // Create the lesson.
     const lesson = await teacher.createLesson({
       dateTime: req.body.dateTime,
       minutes: req.body.minutes,
@@ -48,7 +48,6 @@ function initialize(sequelize) {
     return res.status(201).send({lessonId: lesson.id});
   });
 
-  // Get lessons
   router.get('/', async (req, res) => {
     const user = await sequelize.models.User.findOne({
       where: {id: req.user.id}});

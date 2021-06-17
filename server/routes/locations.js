@@ -7,7 +7,9 @@ function initialize(sequelize) {
   router.use(authorizeUserType('teacher', sequelize));
 
   router.get('/', async (req, res) => {
+    // Get all of the teacher's locations.
     const locations = await req.teacher.getLocations();
+    // Format the response.
     const response = await Promise.all(
         locations.map(async (location) => {
           return {
