@@ -59,6 +59,29 @@ describe('Location Management', function() {
     });
   });
 
+  describe('POST /locations', function() {
+    it('Adds locations to teachers', async function() {
+      const res = await request(await server)
+          .post('/locations')
+          .query({auth_token: token})
+          .send({locationName: 'School'})
+          .expect('Content-Type', /json/)
+          .expect(201);
+      const location = await sequelize.models.Location.findOne({where: {
+        id: res.body.locationId,
+      }});
+      assert(location);
+      assert.strictEqual(location.location, 'School');
+    });
+    it('Rejects requests from students', async function() {
+      const res = await request(await server)
+          .post('/locations')
+          .query({auth_token: studentToken})
+          .expect(401);
+      assert.deepStrictEqual(res.body, {});
+    });
+  });
+
   after(async function() {
     await utils.clearAllTables(sequelize);
   });
