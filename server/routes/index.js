@@ -11,6 +11,7 @@ function initialize(sequelize, passport) {
   secureRouter.use('/teacher-students',
       require('./teacher-students')(sequelize));
   secureRouter.use('/lessons', require('./lessons')(sequelize));
+  secureRouter.use('/locations', require('./locations')(sequelize));
 
   mainRouter.use('/', secureRouter);
   // Return the created router object.
