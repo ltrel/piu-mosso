@@ -1,4 +1,5 @@
 const express = require('express');
+const {body, validationResult} = require('express-validator');
 const {authorizeUserType} = require('./utils');
 
 function initialize(sequelize) {
@@ -7,9 +8,12 @@ function initialize(sequelize) {
   router.use(authorizeUserType('teacher', sequelize));
 
   // Add student
-  router.post('/', async (req, res) => {
-    // Make sure request body contains a student ID.
-    if (!('studentId' in req.body)) return res.sendStatus(400);
+  router.post('/', body('studentId').isInt(), async (req, res) => {
+    // Return validation errors if any were found.
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({errors: errors.array});
+    }
 
     // Find student specified in request.
     const student = await sequelize.models.Student.findOne({
