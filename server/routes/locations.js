@@ -7,7 +7,10 @@ function initialize(sequelize) {
   // All routes require the user to be a teacher.
   router.use(authorizeUserType('teacher', sequelize));
 
-  router.post('/', body('locationName').isString().trim(), async (req, res) => {
+  const postValidators = [
+    body('locationName').isString().trim(),
+  ];
+  router.post('/', postValidators, async (req, res) => {
     // Return validation errors if any were found.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
