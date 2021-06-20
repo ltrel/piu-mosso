@@ -4,5 +4,6 @@
   "jwtExpirySeconds": 7200,
   "saltRounds": 10,
   "dbName": "db.sqlite",
-  "printQueries": false
+  "printQueries": false,
+  "inMemoryDatabase": false
 }

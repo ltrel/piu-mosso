@@ -3,11 +3,17 @@ const path = require('path');
 const config = require('../config.json');
 
 // Setup database connection.
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: path.join(__dirname, config.dbName),
-  logging: (config.printQueries ? console.log : false),
-});
+const sequelize = (() => {
+  const logSetting = config.printQueries ? console.log : false;
+  if (config.inMemoryDatabase) {
+    return new Sequelize('sqlite::memory', {logging: logSetting});
+  }
+  return new Sequelize({
+    dialect: 'sqlite',
+    storage: path.join(__dirname, config.dbName),
+    logging: logSetting,
+  });
+})();
 
 // Load files containing the database schema.
 const modelDefinitions = [
