@@ -8,7 +8,7 @@ function initialize(sequelize) {
   const postValidators = [
     authorizeUserType('teacher', sequelize),
     body('studentId').isInt(),
-    body('instrument').isString(),
+    body('instrument').isString().trim(),
     body('dateTime').isInt(),
     body('minutes').isInt(),
   ];

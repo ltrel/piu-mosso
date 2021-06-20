@@ -9,7 +9,7 @@ function initialize(sequelize, passport) {
   const router = new express.Router();
 
   const registerValidators = [
-    body('username').isString(),
+    body('username').isString().trim(),
     body('password').isString(),
     body('type').isIn(['student', 'teacher']),
   ];
