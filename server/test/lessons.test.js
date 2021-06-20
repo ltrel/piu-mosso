@@ -16,6 +16,10 @@ describe('Lesson Scheduling', function() {
       password: 'pass',
     });
     teacher = await teacherUser.createTeacher({});
+    // Add a location to the teacher.
+    teacher.createLocation({
+      location: 'school',
+    });
 
     // Create a token for the teacher.
     token = utils.generateToken(teacherUser, 10_000);
@@ -52,6 +56,7 @@ describe('Lesson Scheduling', function() {
           .send({
             studentId: (await studentUsers[0].getStudent()).id,
             instrument: 'piano',
+            location: 'school',
             // One hour from now.
             dateTime: Date.now() + 3_600_000,
             minutes: 30,
@@ -70,6 +75,7 @@ describe('Lesson Scheduling', function() {
           .send({
             studentId: 0,
             instrument: 'violin',
+            location: 'school',
             dateTime: Date.now() + 7_200_000,
             minutes: 45,
           })
@@ -97,6 +103,20 @@ describe('Lesson Scheduling', function() {
           .send({
             studentId: (await studentUsers[0].getStudent()).id,
             instrument: 'thisisnotaninstrument',
+            dateTime: Date.now() + 3_600_000,
+            minutes: 60,
+          })
+          .expect(400);
+      assert.strictEqual(await sequelize.models.Lesson.count(), 0);
+    });
+    it('Rejects locations not in database', async function() {
+      await request(await server)
+          .post('/lessons')
+          .query({auth_token: token})
+          .send({
+            studentId: (await studentUsers[0].getStudent()).id,
+            instrument: 'flute',
+            location: 'thisisnotalocation',
             dateTime: Date.now() + 3_600_000,
             minutes: 60,
           })

@@ -9,6 +9,7 @@ function initialize(sequelize) {
     authorizeUserType('teacher', sequelize),
     body('studentId').isInt(),
     body('instrument').isString().trim(),
+    body('location').isString().trim(),
     body('dateTime').isInt(),
     body('minutes').isInt(),
   ];
@@ -29,6 +30,11 @@ function initialize(sequelize) {
       where: {instrument: req.body.instrument}});
     if (instrument === null) return res.sendStatus(400);
 
+    // Find location specified in request.
+    const location = await sequelize.models.Location.findOne({
+      where: {location: req.body.location}});
+    if (location === null) return res.sendStatus(400);
+
     // Create the lesson.
     const lesson = await req.teacher.createLesson({
       dateTime: req.body.dateTime,
@@ -37,6 +43,7 @@ function initialize(sequelize) {
     lesson.setTeacher(req.teacher);
     lesson.setStudent(student);
     lesson.setInstrument(instrument);
+    lesson.setLocation(location);
 
     return res.status(201).send({lessonId: lesson.id});
   });
