@@ -73,6 +73,13 @@ describe('Location Management', function() {
       assert(location);
       assert.strictEqual(location.location, 'School');
     });
+    it('Rejects incomplete requests', async function() {
+      await request(await server)
+          .post('/locations')
+          .query({auth_token: token})
+          .send({})
+          .expect(400);
+    });
     it('Rejects requests from students', async function() {
       const res = await request(await server)
           .post('/locations')
