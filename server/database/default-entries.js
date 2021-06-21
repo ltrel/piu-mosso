@@ -1,6 +1,7 @@
 module.exports.add = async ({models}) => {
   const instrumentNames = [
     'piano',
+    'organ',
     'violin',
     'viola',
     'cello',
@@ -17,6 +18,7 @@ module.exports.add = async ({models}) => {
     'trumpet',
     'trombone',
     'tuba',
+    'french horn',
     'drums',
     'mallet percussion',
   ];
