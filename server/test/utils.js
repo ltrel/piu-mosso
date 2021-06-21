@@ -11,7 +11,6 @@ async function clearAllTables(sequelize) {
   await sequelize.models.Student.destroy({truncate: true});
   await sequelize.models.TeacherStudents.destroy({truncate: true});
   await sequelize.models.Teacher.destroy({truncate: true});
-  await sequelize.models.UserInstruments.destroy({truncate: true});
   await sequelize.models.User.destroy({truncate: true});
   await defaultEntries.add(sequelize);
 }
