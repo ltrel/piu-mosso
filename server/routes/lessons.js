@@ -81,6 +81,30 @@ function initialize(sequelize) {
     }));
     return res.json(response);
   });
+
+  const notesPostValidators = [
+    authorizeUserType('teacher', sequelize),
+    body('lessonId').isInt(),
+    body('text').isString().trim(),
+  ];
+  router.post('/notes', notesPostValidators, async (req, res) => {
+    // Return validation errors if any were found.
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({errors: errors.array});
+    }
+
+    // Find the lesson.
+    const lesson = await sequelize.models.Lesson.findOne({
+      where: {id: req.body.lessonId}});
+    if (lesson === null) return res.sendStatus(400);
+
+    // Set the lesson notes to the provided text.
+    lesson.notes = req.body.text;
+    await lesson.save();
+    return res.sendStatus(200);
+  });
+
   return router;
 }
 

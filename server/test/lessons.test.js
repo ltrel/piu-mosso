@@ -169,6 +169,56 @@ describe('Lesson Scheduling', function() {
     });
   });
 
+  describe('POST /lessons/notes', function() {
+    it('Adds notes to existing lessons by ID', async function() {
+      const trumpet = await sequelize.models.Instrument.findOne({
+        where: {instrument: 'trumpet'},
+      });
+      const lesson = await sequelize.models.Lesson.create({
+        dateTime: 1623810600000,
+        minutes: 30,
+      });
+      await lesson.setTeacher(teacher);
+      await lesson.setStudent(await studentUsers[0].getStudent());
+      await lesson.setInstrument(trumpet);
+
+      await request(await server)
+          .post('/lessons/notes')
+          .query({auth_token: token})
+          .send({
+            lessonId: lesson.id,
+            text: 'Here are some notes about the lesson.',
+          })
+          .expect(200);
+      await lesson.reload();
+      assert.strictEqual(lesson.notes, 'Here are some notes about the lesson.');
+    });
+    it('Rejects non-existent lesson IDs', async function() {
+      await request(await server)
+          .post('/lessons/notes')
+          .query({auth_token: token})
+          .send({
+            lessonId: 0,
+            text: 'Here are some notes about the lesson.',
+          })
+          .expect(400);
+    });
+    it('Rejects requests from students', async function() {
+      const res = await request(await server)
+          .post('/lessons/notes')
+          .query({studentToken: token})
+          .expect(401);
+      assert.deepStrictEqual(res.body, {});
+    });
+    it('Rejects incomplete requests', async function() {
+      await request(await server)
+          .post('/lessons/notes')
+          .query({auth_token: token})
+          .send({})
+          .expect(400);
+    });
+  });
+
   after(async function() {
     await utils.clearAllTables(sequelize);
   });
