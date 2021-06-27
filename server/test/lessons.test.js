@@ -126,7 +126,7 @@ describe('Lesson Scheduling', function() {
   });
 
   describe('GET /lessons', function() {
-    it('Lists the lessons a teacher has', async function() {
+    it('Lists the lessons a teacher or student has', async function() {
       const saxophone = await sequelize.models.Instrument.findOne({
         where: {instrument: 'saxophone'},
       });
