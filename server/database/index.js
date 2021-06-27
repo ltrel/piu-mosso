@@ -10,7 +10,7 @@ const sequelize = (() => {
   }
   return new Sequelize({
     dialect: 'sqlite',
-    storage: path.join(__dirname, config.dbName),
+    storage: path.join(__dirname, '..', 'data', config.dbName),
     logging: logSetting,
   });
 })();

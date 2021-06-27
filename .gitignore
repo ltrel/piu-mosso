@@ -1,4 +1,4 @@
 server/node_modules
-server/database/db.sqlite
+server/data
 server/test-requests
 server/config.json
