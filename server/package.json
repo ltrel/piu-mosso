@@ -4,7 +4,7 @@
   "description": "Server for Piu Mosso",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha --no-timeouts",
     "lint": "eslint \"**/*.js\"",
     "lint-fix": "eslint --fix \"**/*.js\""
   },
