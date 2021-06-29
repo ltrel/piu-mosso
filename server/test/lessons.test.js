@@ -219,6 +219,81 @@ describe('Lesson Scheduling', function() {
     });
   });
 
+  describe('GET /lessons/notes', function() {
+    it('Fetches notes from existing lessons', async function() {
+      const cello = await sequelize.models.Instrument.findOne({
+        where: {instrument: 'cello'},
+      });
+      const lesson = await sequelize.models.Lesson.create({
+        dateTime: 1623810600000,
+        minutes: 30,
+        notes: 'Here are some notes about the lesson.',
+      });
+      await lesson.setTeacher(teacher);
+      await lesson.setStudent(await studentUsers[0].getStudent());
+      await lesson.setInstrument(cello);
+
+      const teacherRes = await request(await server)
+          .get('/lessons/notes')
+          .query({auth_token: token})
+          .send({
+            lessonId: lesson.id,
+          })
+          .expect('Content-Type', /json/)
+          .expect(200);
+      assert.strictEqual(lesson.notes, teacherRes.body.notes);
+
+      const studentRes = await request(await server)
+          .get('/lessons/notes')
+          .query({auth_token: studentToken})
+          .send({
+            lessonId: lesson.id,
+          })
+          .expect('Content-Type', /json/)
+          .expect(200);
+      assert.strictEqual(lesson.notes, studentRes.body.notes);
+    });
+    it('Rejects requests from users not part of the lesson', async function() {
+      const tuba = await sequelize.models.Instrument.findOne({
+        where: {instrument: 'tuba'},
+      });
+      const lesson = await sequelize.models.Lesson.create({
+        dateTime: 1623810600000,
+        minutes: 45,
+        notes: 'Here are some notes about the lesson.',
+      });
+      await lesson.setTeacher(teacher);
+      await lesson.setStudent(await studentUsers[1].getStudent());
+      await lesson.setInstrument(tuba);
+
+      const res = await request(await server)
+          .get('/lessons/notes')
+          .query({auth_token: studentToken})
+          .send({
+            lessonId: lesson.id,
+          })
+          .expect(401);
+      assert.deepStrictEqual(res.body, {});
+    });
+    it('Rejects nonexistent lesson IDs', async function() {
+      const res = await request(await server)
+          .get('/lessons/notes')
+          .query({auth_token: token})
+          .send({
+            lessonId: 0,
+          })
+          .expect(400);
+      assert.deepStrictEqual(res.body, {});
+    });
+    it('Rejects incomplete requests', async function() {
+      await request(await server)
+          .get('/lessons/notes')
+          .query({auth_token: token})
+          .send({})
+          .expect(400);
+    });
+  });
+
   after(async function() {
     await utils.clearAllTables(sequelize);
   });

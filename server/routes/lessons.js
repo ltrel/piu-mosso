@@ -105,6 +105,30 @@ function initialize(sequelize) {
     return res.sendStatus(200);
   });
 
+  router.get('/notes', body('lessonId').isInt(), async (req, res) => {
+    // Return validation errors if any were found.
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({errors: errors.array});
+    }
+
+    // Find the lesson.
+    const lesson = await sequelize.models.Lesson.findOne({
+      where: {id: req.body.lessonId}});
+    if (lesson === null) return res.sendStatus(400);
+
+    // Make sure the user is either the teacher or student of the lesson.
+    const allowedUserIds = [
+      (await (await lesson.getTeacher()).getUser()).id,
+      (await (await lesson.getStudent()).getUser()).id,
+    ];
+    if (!allowedUserIds.includes(req.user.id)) {
+      return res.sendStatus(401);
+    }
+
+    return res.json({notes: lesson.notes});
+  });
+
   return router;
 }
 
