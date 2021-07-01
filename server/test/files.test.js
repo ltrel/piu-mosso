@@ -1,8 +1,11 @@
 const request = require('supertest');
 const path = require('path');
+const fs = require('fs-extra');
 const assert = require('assert');
 
 const {server, sequelize, utils} = require('./_setup.test');
+
+const uploadsDir = path.join(__dirname, '..', 'data', 'uploads');
 
 describe('Shared Files', function() {
   let token;
@@ -43,7 +46,11 @@ describe('Shared Files', function() {
     studentToken = utils.generateToken(studentUsers[0], 10_000);
   });
   beforeEach(async function() {
+    // Clear the table and uploads directory.
     await sequelize.models.File.destroy({truncate: true});
+    if (fs.existsSync(uploadsDir)) {
+      fs.emptyDirSync(uploadsDir);
+    }
   });
 
   describe('POST /files', function() {
