@@ -39,6 +39,32 @@ function initialize(sequelize) {
     return res.json({fileId: fileEntry.id});
   });
 
+  const downloadMiddlewares = [
+    body('fileId').isInt(),
+  ];
+  router.get('/download', downloadMiddlewares, async (req, res) => {
+    // Return validation errors if any were found.
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({errors: errors.array()});
+    }
+    // Find the database entry corresponding to the file.
+    const fileEntry = await sequelize.models.File.findOne(
+        {where: {id: req.body.fileId}});
+    if (fileEntry === null) return res.sendStatus(400);
+
+    // Make sure the user has permission to access the file.
+    const allowedUserIds = [
+      (await (await fileEntry.getTeacher()).getUser()).id,
+      (await (await fileEntry.getStudent()).getUser()).id,
+    ];
+    if (!allowedUserIds.includes(req.user.id)) {
+      return res.sendStatus(401);
+    }
+
+    return res.download(fileEntry.filePath, fileEntry.fileName);
+  });
+
   return router;
 }
 
