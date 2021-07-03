@@ -61,6 +61,34 @@ async function verifyLessonJson(json, sequelize) {
   assert.strictEqual(teacherUser.fullName, json.teacherName);
 }
 
+async function verifyFileJsonArr(jsonArr, sequelize) {
+  for (json of jsonArr) {
+    await verifyFileJson(json, sequelize);
+  }
+}
+async function verifyFileJson(json, sequelize) {
+  const fileEntry = await sequelize.models.File.findOne({where: {
+    id: json.id,
+  }});
+  const student = await sequelize.models.Student.findOne({where: {
+    id: json.studentId,
+  }});
+  const studentUser = await student.getUser();
+  const teacher = await sequelize.models.Student.findOne({where: {
+    id: json.studentId,
+  }});
+  const teacherUser = await teacher.getUser();
+  assert(fileEntry);
+  assert(student);
+  assert(studentUser);
+  assert(teacher);
+  assert(teacherUser);
+  assert.strictEqual(fileEntry.fileName, json.fileName);
+  assert.strictEqual(fileEntry.dateTime, json.dateTime);
+  assert.strictEqual(studentUser.fullName, json.studentName);
+  assert.strictEqual(teacherUser.fullName, json.teacherName);
+}
+
 function generateToken(user, expiryOffset) {
   const expiryDate = Date.now() + expiryOffset;
   const body = {id: user.id, username: user.username};
@@ -73,5 +101,7 @@ module.exports = {
   verifyStudentJsonArr,
   verifyLessonJson,
   verifyLessonJsonArr,
+  verifyFileJson,
+  verifyFileJsonArr,
   generateToken,
 };

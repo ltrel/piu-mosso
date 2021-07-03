@@ -39,6 +39,37 @@ function initialize(sequelize) {
     return res.json({fileId: fileEntry.id});
   });
 
+  router.get('/', async (req, res) => {
+    const user = await sequelize.models.User.findOne({
+      where: {id: req.user.id}});
+
+    // Check if the user is a teacher or student,
+    // then find all the files they have access to.
+    let fileEntries;
+    if (teacher = await user.getTeacher()) {
+      fileEntries = await teacher.getFiles();
+    } else if (student = await user.getStudent()) {
+      fileEntries = await student.getFiles();
+    } else return res.sendStatus(500);
+
+    const response = await Promise.all(fileEntries.map(async (file) => {
+      const teacherName = (await (await file.getTeacher())
+          .getUser()).fullName;
+      const studentName = (await (await file.getStudent())
+          .getUser()).fullName;
+      return {
+        id: file.id,
+        dateTime: file.dateTime.getTime(),
+        fileName: file.fileName,
+        teacherName: teacherName,
+        teacherId: (await file.getTeacher()).id,
+        studentName: studentName,
+        studentId: (await file.getTeacher()).id,
+      };
+    }));
+    return res.json(response);
+  });
+
   const downloadMiddlewares = [
     body('fileId').isInt(),
   ];

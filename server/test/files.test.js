@@ -98,6 +98,43 @@ describe('Shared Files', function() {
     });
   });
 
+  describe('GET /files', function() {
+    it('Lists the lessons a teacher or student has', async function() {
+      const fileEntries = [];
+      fileEntries.push(await sequelize.models.File.create({
+        fileName: 'SomeFile.mp3',
+        filePath: '/some/path/to/a/file',
+        dateTime: 1623810600000,
+      }));
+      await fileEntries[0].setTeacher(teacher);
+      await fileEntries[0].setStudent(await studentUsers[0].getStudent());
+
+      fileEntries.push(await sequelize.models.File.create({
+        fileName: 'SomeOtherFile.pdf',
+        filePath: '/some/path/to/a/different/file',
+        dateTime: 1623810600000,
+      }));
+      await fileEntries[1].setTeacher(teacher);
+      await fileEntries[1].setStudent(await studentUsers[1].getStudent());
+
+      const teacherRes = await request(await server)
+          .get('/files')
+          .query({auth_token: token})
+          .expect(200)
+          .expect('Content-Type', /json/);
+      assert.strictEqual(teacherRes.body.length, 2);
+      utils.verifyFileJsonArr(teacherRes.body);
+
+      const studentRes = await request(await server)
+          .get('/files')
+          .query({auth_token: studentToken})
+          .expect(200)
+          .expect('Content-Type', /json/);
+      assert.strictEqual(studentRes.body.length, 1);
+      utils.verifyFileJsonArr(studentRes.body);
+    });
+  });
+
   describe('GET /files/download', function() {
     it('Downloads files from the server', async function() {
       // Copy a file to the uploads directory.
