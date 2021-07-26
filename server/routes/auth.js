@@ -57,7 +57,14 @@ function initialize(sequelize, passport) {
       async (req, res) => {
         // Create new JWT.
         const expiryDate = Date.now() + config.jwtExpirySeconds * 1000;
-        const body = {id: req.user.id, username: req.user.username};
+        const accountType = (
+          await req.user.getTeacher() ? 'teacher' : 'student');
+        const body = {
+          id: req.user.id,
+          username: req.user.username,
+          fullName: req.user.fullName,
+          accountType: accountType,
+        };
         const token = jwt.sign(
             {expiryDate: expiryDate, user: body}, config.jwtSecret);
         // Send it back in the response.
