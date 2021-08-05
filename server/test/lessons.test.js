@@ -133,6 +133,9 @@ describe('Lesson Scheduling', function() {
       const clarinet = await sequelize.models.Instrument.findOne({
         where: {instrument: 'clarinet'},
       });
+      const school = (await teacher.getLocations({
+        where: {location: 'school'},
+      }))[0];
 
       const lessons = [];
       lessons.push(await sequelize.models.Lesson.create({
@@ -142,6 +145,7 @@ describe('Lesson Scheduling', function() {
       await lessons[0].setTeacher(teacher);
       await lessons[0].setStudent(await studentUsers[0].getStudent());
       await lessons[0].setInstrument(saxophone);
+      await lessons[0].setLocation(school);
 
       lessons.push(await sequelize.models.Lesson.create({
         dateTime: 1623769200000,
@@ -150,6 +154,7 @@ describe('Lesson Scheduling', function() {
       await lessons[1].setTeacher(teacher);
       await lessons[1].setStudent(await studentUsers[1].getStudent());
       await lessons[1].setInstrument(clarinet);
+      await lessons[1].setLocation(school);
 
       const teacherRes = await request(await server)
           .get('/lessons')

@@ -77,6 +77,7 @@ function initialize(sequelize) {
         studentName: studentName,
         studentId: (await lesson.getTeacher()).id,
         instrument: (await lesson.getInstrument()).instrument,
+        location: (await lesson.getLocation()).location,
       };
     }));
     return res.json(response);
