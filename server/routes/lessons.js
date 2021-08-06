@@ -39,6 +39,7 @@ function initialize(sequelize) {
     const lesson = await req.teacher.createLesson({
       dateTime: req.body.dateTime,
       minutes: req.body.minutes,
+      attendance: false,
     });
     lesson.setTeacher(req.teacher);
     lesson.setStudent(student);
@@ -78,6 +79,7 @@ function initialize(sequelize) {
         studentId: (await lesson.getTeacher()).id,
         instrument: (await lesson.getInstrument()).instrument,
         location: (await lesson.getLocation()).location,
+        attendance: lesson.attendance,
       };
     }));
     return res.json(response);
@@ -87,6 +89,7 @@ function initialize(sequelize) {
     authorizeUserType('teacher', sequelize),
     body('lessonId').isInt(),
     body('text').isString().trim(),
+    body('attendance').isBoolean().optional(),
   ];
   router.post('/notes', notesPostValidators, async (req, res) => {
     // Return validation errors if any were found.
@@ -102,6 +105,11 @@ function initialize(sequelize) {
 
     // Set the lesson notes to the provided text.
     lesson.notes = req.body.text;
+
+    // Set the attendance if it was provided in the request.
+    if (req.body.attendance != undefined) {
+      lesson.attendance = req.body.attendance;
+    }
     await lesson.save();
     return res.sendStatus(200);
   });

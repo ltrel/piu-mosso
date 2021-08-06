@@ -13,6 +13,9 @@ module.exports.define = (sequelize) => {
     notes: {
       type: DataTypes.TEXT,
     },
+    attendance: {
+      type: DataTypes.BOOLEAN,
+    },
   });
 };
 
