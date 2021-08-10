@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 const {authorizeUserType} = require('./utils');
@@ -70,6 +71,32 @@ function initialize(sequelize) {
       };
     }));
     return res.json(response);
+  });
+
+  const deleteMiddlewares = [
+    authorizeUserType('teacher', sequelize),
+    body('fileId').isInt(),
+  ];
+  router.delete('/', deleteMiddlewares, async (req, res) => {
+    // Return validation errors if any were found.
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({errors: errors.array()});
+    }
+    // Find the database entry corresponding to the file.
+    const fileEntry = await sequelize.models.File.findOne(
+        {where: {id: req.body.fileId}});
+    if (fileEntry === null) return res.sendStatus(400);
+
+    // Make sure the user has permission to access the file.
+    const allowedUserId = (await (await fileEntry.getTeacher()).getUser()).id;
+    if (req.user.id !== allowedUserId) {
+      return res.sendStatus(401);
+    }
+    // Delete the file from disk and the entry from the database.
+    fs.unlinkSync(fileEntry.filePath);
+    await fileEntry.destroy();
+    return res.sendStatus(200);
   });
 
   const downloadMiddlewares = [
