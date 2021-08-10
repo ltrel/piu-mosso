@@ -34,6 +34,8 @@ function initialize(sequelize) {
       filePath: req.file.path,
       dateTime: Date.now(),
     });
+    fileEntry.setTeacher(req.teacher);
+    fileEntry.setStudent(student);
 
     res.status(201);
     return res.json({fileId: fileEntry.id});
@@ -64,7 +66,7 @@ function initialize(sequelize) {
         teacherName: teacherName,
         teacherId: (await file.getTeacher()).id,
         studentName: studentName,
-        studentId: (await file.getTeacher()).id,
+        studentId: (await file.getStudent()).id,
       };
     }));
     return res.json(response);
