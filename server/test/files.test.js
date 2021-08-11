@@ -53,9 +53,9 @@ describe('Shared Files', function() {
   beforeEach(async function() {
     // Clear the table and uploads directory.
     await sequelize.models.File.destroy({truncate: true});
-    if (fs.existsSync(uploadsDir)) {
-      fs.emptyDirSync(uploadsDir);
-    }
+    // if (fs.existsSync(uploadsDir)) {
+    //   fs.emptyDirSync(uploadsDir);
+    // }
   });
 
   describe('POST /files', function() {
