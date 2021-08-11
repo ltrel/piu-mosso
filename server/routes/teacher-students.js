@@ -4,11 +4,13 @@ const {authorizeUserType} = require('./utils');
 
 function initialize(sequelize) {
   const router = new express.Router();
-  // All routes require the user to be a teacher.
-  router.use(authorizeUserType('teacher', sequelize));
 
+  const postMiddlewares = [
+    authorizeUserType('teacher', sequelize),
+    body('studentId').isInt(),
+  ];
   // Add student
-  router.post('/', body('studentId').isInt(), async (req, res) => {
+  router.post('/', postMiddlewares, async (req, res) => {
     // Return validation errors if any were found.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -25,7 +27,11 @@ function initialize(sequelize) {
   });
 
   // Route for deleting students
-  router.delete('/', body('studentId').isInt(), async (req, res) => {
+  const deleteMiddlewares = [
+    authorizeUserType('teacher', sequelize),
+    body('studentId').isInt(),
+  ];
+  router.delete('/', deleteMiddlewares, async (req, res) => {
     // Return validation errors if any were found.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -42,6 +48,20 @@ function initialize(sequelize) {
   });
 
   router.get('/', async (req, res) => {
+    // Find the user making the request.
+    const user = await sequelize.models.User.findOne({
+      where: {id: req.user.id}});
+
+    // Check if the user is a student or teacher and call the relevant
+    // function.
+    if (req.teacher = await user.getTeacher()) {
+      return teacherGet(req, res);
+    } else if (req.student = await user.getStudent()) {
+      return studentGet(req, res);
+    } else return res.sendStatus(500);
+  });
+
+  async function teacherGet(req, res) {
     // Find all the teacher's students.
     const students = await req.teacher.getStudents();
     // Format the response.
@@ -54,8 +74,24 @@ function initialize(sequelize) {
             studentId: student.id,
           };
         }));
-    res.json(response);
-  });
+    return res.json(response);
+  }
+
+  async function studentGet(req, res) {
+    // Find all the student's teachers.
+    const teachers = await req.student.getTeachers();
+    // Format the response.
+    const response = await Promise.all(
+        teachers.map(async (teacher) => {
+          const teacherUser = await teacher.getUser();
+          return {
+            fullName: teacherUser.fullName,
+            username: teacherUser.username,
+            teacherId: teacher.id,
+          };
+        }));
+    return res.json(response);
+  }
 
   return router;
 }

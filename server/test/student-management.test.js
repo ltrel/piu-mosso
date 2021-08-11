@@ -115,13 +115,6 @@ describe('Student Management', function() {
       // Make sure the student details returned by the request are correct.
       await utils.verifyStudentJsonArr(res.body, sequelize);
     });
-    it('Rejects requests from students', async function() {
-      const res = await request(await server)
-          .get('/teacher-students')
-          .query({auth_token: studentToken})
-          .expect(401);
-      assert.deepStrictEqual(res.body, {});
-    });
   });
 
   describe('GET /students', function() {
