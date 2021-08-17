@@ -68,6 +68,21 @@ describe('Lesson Scheduling', function() {
       });
       assert(createdLesson);
     });
+    it('Ensures that minutes and dateTime are integers', async function() {
+      const res = await request(await server)
+          .post('/lessons')
+          .query({auth_token: token})
+          .send({
+            studentId: (await studentUsers[0].getStudent()).id,
+            instrument: 'piano',
+            location: 'school',
+            dateTime: 'test string',
+            minutes: 'test string',
+          })
+          .expect('Content-Type', /json/)
+          .expect(400);
+      assert.deepStrictEqual(res.body, {});
+    });
     it('Rejects nonexistent student IDs', async function() {
       await request(await server)
           .post('/lessons')
